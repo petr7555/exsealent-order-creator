@@ -252,12 +252,10 @@ namespace ExsealentOrderCreator
             }
 
             // Order from smallest size to largest
-            rows = rows.OrderBy(row =>
-            {
-                var sizeStr = GetSize(row);
-                var size = int.Parse(sizeStr.Split('/').First());
-                return size;
-            }).ToList();
+            // Compares numbers then strings
+            // e.g. 86/92, 86, 104/110, 104, L, M, ONE, S
+            rows = rows.OrderBy(row => GetSize(row).Split('/').First(),
+                new SemiNumericComparer()).ToList();
 
             for (var i = 0; i < rows.Count; i++)
             {
