@@ -21,7 +21,6 @@ namespace ExsealentOrderCreator
         }
     }
 
-
     internal static class Program
     {
         private static void Main(string[] args)
@@ -110,6 +109,9 @@ namespace ExsealentOrderCreator
                     range.Merge();
                     range.Value = column;
                     idx += config.NumSizes;
+
+                    // styling
+                    range.Style.Fill.BackgroundColor = config.Yellow;
                 }
                 else
                 {
@@ -118,7 +120,7 @@ namespace ExsealentOrderCreator
                 }
             }
 
-            // Format header
+            // styling
             var headerRange = ws.Row(config.HeaderRowIndex).RowUsed();
             headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             headerRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
@@ -126,7 +128,6 @@ namespace ExsealentOrderCreator
             headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
             headerRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
             ws.Row(config.HeaderRowIndex).Height = 40;
-            // TODO make some cells yellow
         }
 
         private static void InsertImage(IXLWorksheet ws, IXLTableRow row, int rowIdx, int columnNumber,
@@ -369,7 +370,7 @@ namespace ExsealentOrderCreator
             var reg = new Regex($"^{imgName}");
             var files = Directory.GetFiles(imgFolder, "*")
                 .Where(path => reg.IsMatch(Path.GetFileName(path)));
-            
+
             imgPath = files.FirstOrDefault();
             return !string.IsNullOrEmpty(imgPath);
 
