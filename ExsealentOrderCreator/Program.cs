@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using ClosedXML.Excel;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace ExsealentOrderCreator
 {
@@ -46,13 +47,16 @@ namespace ExsealentOrderCreator
             var inputRange = inWs.RangeUsed();
             var inputTable = inputRange.AsTable();
 
-
             var groupedRows = inputTable.DataRange.Rows()
                 .GroupBy(row => new
                 {
                     ColInProduct = row.Field(config.ColInProduct).GetString(),
                     ColInColor = row.Field(config.ColInColor).GetString()
-                });
+                })
+                .ToList();
+
+            var maxSizes = groupedRows.Max(row => row.Count());
+            config.NumSizes = maxSizes;
 
             InsertHeader(outWs, config);
 
@@ -84,7 +88,7 @@ namespace ExsealentOrderCreator
             // fit columns to contents excluding the image column
             foreach (var col in outWs.Columns().Skip(1))
             {
-               col.AdjustToContents();
+                col.AdjustToContents();
             }
 
             // TODO might not be needed
@@ -122,12 +126,13 @@ namespace ExsealentOrderCreator
             headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
             headerRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
             ws.Row(config.HeaderRowIndex).Height = 40;
+            // TODO make some cells yellow
         }
 
         private static void InsertImage(IXLWorksheet ws, IXLTableRow row, int rowIdx, int columnNumber,
             Configuration config)
         {
-            var imgName = $"{row.Field(config.ColInProduct).GetString()}-{row.Field(config.ColInColor).GetString()}_1";
+            var imgName = $"{row.Field(config.ColInProduct).GetString()}-{row.Field(config.ColInColor).GetString()}";
             var cell = ws.Cell(rowIdx, columnNumber);
 
             if (FindImagePath(config.ImgFolder, imgName, out var imgPath))
@@ -246,7 +251,12 @@ namespace ExsealentOrderCreator
             }
 
             // Order from smallest size to largest
-            rows = rows.OrderBy(GetSize).ToList();
+            rows = rows.OrderBy(row =>
+            {
+                var sizeStr = GetSize(row);
+                var size = int.Parse(sizeStr.Split('/').First());
+                return size;
+            }).ToList();
 
             for (var i = 0; i < rows.Count; i++)
             {
@@ -294,7 +304,7 @@ namespace ExsealentOrderCreator
             cell.Style.Font.Bold = true;
             cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             cell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-            
+
             // conditional formatting 
             ws.Range(cell.CellAbove().CellAbove(), cell)
                 .AddConditionalFormat()
@@ -314,7 +324,7 @@ namespace ExsealentOrderCreator
             cell.Style.Font.Bold = true;
             cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             cell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-            
+
             // conditional formatting 
             ws.Range(cell.CellAbove().CellAbove(), cell)
                 .AddConditionalFormat()
@@ -356,6 +366,13 @@ namespace ExsealentOrderCreator
          */
         private static bool FindImagePath(string imgFolder, string imgName, out string imgPath)
         {
+            var reg = new Regex($"^{imgName}");
+            var files = Directory.GetFiles(imgFolder, "*")
+                .Where(path => reg.IsMatch(Path.GetFileName(path)));
+            
+            imgPath = files.FirstOrDefault();
+            return !string.IsNullOrEmpty(imgPath);
+
             var extensions = new[] {"jpg", "png", "jpeg"};
 
             foreach (var extension in extensions)

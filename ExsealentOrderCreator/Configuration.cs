@@ -27,7 +27,7 @@ namespace ExsealentOrderCreator
         public string OutputWorksheetName { get; set; } = "Nabídka";
 
         public string ImgFolder { get; set; } = "/Users/petr.janik/Desktop/Excel_Makro/Fotky";
-        public int NumSizes { get; set; } = 16; // TODO could be computed from the data
+        public int NumSizes { get; set; }
 
         public int HeaderRowIndex { get; set; } = 1;
 
