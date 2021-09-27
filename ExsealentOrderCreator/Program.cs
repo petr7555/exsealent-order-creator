@@ -89,8 +89,7 @@ namespace ExsealentOrderCreator
             {
                 col.AdjustToContents();
             }
-
-            // TODO might not be needed
+            
             // Set workbook calculation mode
             // When you make any change to the document, all affected parts of the document are recalculated.
             outWb.CalculateMode = XLCalculateMode.Auto;
@@ -135,12 +134,11 @@ namespace ExsealentOrderCreator
         {
             var imgName = $"{row.Field(config.ColInProduct).GetString()}-{row.Field(config.ColInColor).GetString()}";
             var cell = ws.Cell(rowIdx, columnNumber);
-
+            
             if (FindImagePath(config.ImgFolder, imgName, out var imgPath))
             {
                 var image = ws.AddPicture(imgPath)
-                    .MoveTo(cell);
-                image.Scale(config.RowHeight / (image.OriginalHeight * 0.75d));
+                    .MoveTo(cell, ws.Cell(rowIdx+1, columnNumber+1));
             }
 
             // styling
@@ -371,19 +369,6 @@ namespace ExsealentOrderCreator
 
             imgPath = files.FirstOrDefault();
             return !string.IsNullOrEmpty(imgPath);
-
-            var extensions = new[] {"jpg", "png", "jpeg"};
-
-            foreach (var extension in extensions)
-            {
-                var possiblePath = Path.Combine(imgFolder, $"{imgName}.{extension}");
-                if (!File.Exists(possiblePath)) continue;
-                imgPath = possiblePath;
-                return true;
-            }
-
-            imgPath = "";
-            return false;
         }
 
         private static void PrintName()
