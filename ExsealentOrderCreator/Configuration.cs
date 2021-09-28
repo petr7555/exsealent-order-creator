@@ -8,7 +8,7 @@ namespace ExsealentOrderCreator
         {
             InputHeaderColumns = new[]
             {
-                ColInEan, ColInClassification, ColInPcsAvailable, ColInProduct, ColInVariant, ColInColor, ColInPrice,
+                ColInEan, ColInClassification, ColInPcsAvailable, ColInProduct, ColInColor, ColInSize, ColInPrice,
                 ColInDetailOne, ColInDescription, ColInDetailTwo
             };
 
@@ -18,6 +18,8 @@ namespace ExsealentOrderCreator
                 ColOutRecommendedPriceWithVat, ColOutColor, ColOutSizeInStockOrder, ColOutTotalPcs,
                 ColOutTotalPriceNoVat
             };
+
+            ImageRowWidth = RowHeight / RowHeightImageWidthRatio;
         }
 
         public string InputWorkbookName { get; set; } = "Data.xlsx";
@@ -36,8 +38,8 @@ namespace ExsealentOrderCreator
         public string ColInClassification { get; } = "Zařazení";
         public string ColInPcsAvailable { get; } = "K dispozici";
         public string ColInProduct { get; } = "Produkt";
-        public string ColInVariant { get; } = "Varianta";
         public string ColInColor { get; } = "Barva";
+        public string ColInSize { get; } = "Velikost";
         public string ColInPrice { get; } = "Cena";
         public string ColInDetailOne { get; } = "Údaj 1";
         public string ColInDescription { get; } = "Popis";
@@ -61,13 +63,13 @@ namespace ExsealentOrderCreator
         public string[] OutputHeaderColumns { get; }
 
         public string EurFormat { get; } = "#,##0.00 €";
-        public string CzkFormat { get; } = "#,##0 CZK";
+        public string CzkFormat { get; } = "#,##0 Kč";
 
         public XLColor Yellow { get; } = XLColor.Yellow;
         public XLColor LightBlue { get; } = XLColor.LightBlue;
-        
-        public int RowHeight { get; set; } = 150;
-        public int ImageRowWidth { get; set; } = 23; // different unit that row height
 
+        public double RowHeight { get; } = 150;
+        public double RowHeightImageWidthRatio { get; } = 5.8;
+        public double ImageRowWidth { get; }
     }
 }

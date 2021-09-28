@@ -84,17 +84,51 @@ namespace ExsealentOrderCreator
                 rowIdx += 3;
             }
 
+            InsertTotalPriceBox(outWs, config, 9 + config.NumSizes - 3);
+
             // fit columns to contents excluding the image column
             foreach (var col in outWs.Columns().Skip(1))
             {
                 col.AdjustToContents();
             }
-            
+
             // Set workbook calculation mode
             // When you make any change to the document, all affected parts of the document are recalculated.
             outWb.CalculateMode = XLCalculateMode.Auto;
 
             outWb.SaveAs(config.OutputWorkbookName);
+        }
+
+        private static void InsertTotalPriceBox(IXLWorksheet ws, Configuration config, int columnNumber)
+        {
+            var rowsCount = ws.Rows().Count();
+            var leftLabelCell = ws.Cell(rowsCount + 2, columnNumber);
+            var rightLabelCell = leftLabelCell.CellRight().CellRight();
+            var labelRange = ws.Range(leftLabelCell, rightLabelCell);
+            labelRange.Merge();
+            labelRange.Value = "Celkem:";
+
+            var totalPcsCell = rightLabelCell.CellRight();
+            // TODO what if again ws.RowCount()
+            // TODO nefunguje obecny radek headeru
+            totalPcsCell.FormulaA1 = $"SUM({ws.Cell(2, totalPcsCell.Address.ColumnNumber)}:{ws.Cell(rowsCount, totalPcsCell.Address.ColumnNumber)})";
+            // conditional formatting
+            totalPcsCell
+                .AddConditionalFormat()
+                .WhenGreaterThan(0)
+                .Fill.SetBackgroundColor(config.Yellow);
+
+            var totalPriceCell = totalPcsCell.CellRight();
+            totalPriceCell.FormulaA1 = $"SUM({ws.Cell(2, totalPriceCell.Address.ColumnNumber)}:{ws.Cell(rowsCount, totalPriceCell.Address.ColumnNumber)})";
+            // styling
+            totalPriceCell.Style.NumberFormat.Format = config.EurFormat;
+
+            var boxRange = ws.Range(leftLabelCell, totalPriceCell);
+            // styling
+            boxRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            boxRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            boxRange.Style.Font.Bold = true;
+            boxRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
         }
 
         private static void InsertHeader(IXLWorksheet ws, Configuration config)
@@ -134,11 +168,11 @@ namespace ExsealentOrderCreator
         {
             var imgName = $"{row.Field(config.ColInProduct).GetString()}-{row.Field(config.ColInColor).GetString()}";
             var cell = ws.Cell(rowIdx, columnNumber);
-            
+
             if (FindImagePath(config.ImgFolder, imgName, out var imgPath))
             {
                 var image = ws.AddPicture(imgPath)
-                    .MoveTo(cell, ws.Cell(rowIdx+1, columnNumber+1));
+                    .MoveTo(cell, ws.Cell(rowIdx + 1, columnNumber + 1));
             }
 
             // styling
@@ -244,14 +278,12 @@ namespace ExsealentOrderCreator
         {
             string GetSize(IXLTableRow row)
             {
-                var variant = row.Field(config.ColInVariant).GetString();
-                var size = variant.Substring(variant.IndexOf("-", StringComparison.Ordinal) + 1);
-                return size;
+                return row.Field(config.ColInSize).GetString();
             }
 
             // Order from smallest size to largest
             // Compares numbers then strings
-            // e.g. 86/92, 86, 104/110, 104, L, M, ONE, S
+            // e.g. 86, 86/92, 104/110, 104, XS, S, M, L, XL, XXL, ONE
             rows = rows.OrderBy(row => GetSize(row).Split('/').First(),
                 new SemiNumericComparer()).ToList();
 

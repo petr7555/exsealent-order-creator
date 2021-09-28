@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace ExsealentOrderCreator
 {
-    public class SemiNumericComparer: IComparer<string>
+    public class SemiNumericComparer : IComparer<string>
     {
         /// <summary>
         /// Method to determine if a string is a number
@@ -30,17 +30,7 @@ namespace ExsealentOrderCreator
                 var i1 = Convert.ToInt32(s1);
                 var i2 = Convert.ToInt32(s2);
 
-                if (i1 > i2)
-                {
-                    return s1GreaterThanS2;
-                }
-
-                if (i1 < i2)
-                {
-                    return s2GreaterThanS1;
-                }
-
-                return 0;
+                return i1 - i2;
             }
 
             if (isNumeric1)
@@ -53,6 +43,37 @@ namespace ExsealentOrderCreator
                 return s1GreaterThanS2;
             }
 
+            var sizes = new Dictionary<string, int>
+            {
+                {"XS", 0},
+                {"S", 1},
+                {"M", 2},
+                {"L", 3},
+                {"XL", 4},
+                {"XXL", 5}
+            };
+
+            var isInSizes1 = sizes.ContainsKey(s1);
+            var isInSizes2 = sizes.ContainsKey(s2);
+
+            if (isInSizes1 && isInSizes2)
+            {
+                var i1 = sizes[s1];
+                var i2 = sizes[s2];
+
+                return i1 - i2;
+            }
+
+            if (isInSizes1)
+            {
+                return s2GreaterThanS1;
+            }
+
+            if (isInSizes2)
+            {
+                return s1GreaterThanS2;
+            }
+            
             return string.Compare(s1, s2, true, CultureInfo.InvariantCulture);
         }
     }
