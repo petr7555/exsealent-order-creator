@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace ExsealentOrderCreator
 {
@@ -22,13 +23,16 @@ namespace ExsealentOrderCreator
             const int s1GreaterThanS2 = 1;
             const int s2GreaterThanS1 = -1;
 
-            var isNumeric1 = IsNumeric(s1);
-            var isNumeric2 = IsNumeric(s2);
+            var beforeSlash1 = s1.Split('/').First();
+            var beforeSlash2 = s2.Split('/').First();
+            
+            var isNumeric1 = IsNumeric(beforeSlash1);
+            var isNumeric2 = IsNumeric(beforeSlash2);
 
             if (isNumeric1 && isNumeric2)
             {
-                var i1 = Convert.ToInt32(s1);
-                var i2 = Convert.ToInt32(s2);
+                var i1 = Convert.ToInt32(beforeSlash1);
+                var i2 = Convert.ToInt32(beforeSlash2);
 
                 return i1 - i2;
             }
@@ -43,23 +47,15 @@ namespace ExsealentOrderCreator
                 return s1GreaterThanS2;
             }
 
-            var sizes = new Dictionary<string, int>
-            {
-                {"XS", 0},
-                {"S", 1},
-                {"M", 2},
-                {"L", 3},
-                {"XL", 4},
-                {"XXL", 5}
-            };
+            var sizes = new List<string> {"XXS", "XS", "XS/S", "S", "S/M", "M", "M/L", "L", "L/XL", "XL", "XXL", "XXXL"};
 
-            var isInSizes1 = sizes.ContainsKey(s1);
-            var isInSizes2 = sizes.ContainsKey(s2);
+            var isInSizes1 = sizes.Contains(s1);
+            var isInSizes2 = sizes.Contains(s2);
 
             if (isInSizes1 && isInSizes2)
             {
-                var i1 = sizes[s1];
-                var i2 = sizes[s2];
+                var i1 = sizes.IndexOf(s1);
+                var i2 = sizes.IndexOf(s2);
 
                 return i1 - i2;
             }
@@ -73,7 +69,7 @@ namespace ExsealentOrderCreator
             {
                 return s1GreaterThanS2;
             }
-            
+
             return string.Compare(s1, s2, true, CultureInfo.InvariantCulture);
         }
     }

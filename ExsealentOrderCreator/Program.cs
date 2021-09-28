@@ -72,7 +72,7 @@ namespace ExsealentOrderCreator
                 InsertCategory(outWs, row, rowIdx, 5, config);
                 var priceNoVatColumnNumber = 6;
                 InsertPriceNoVat(outWs, row, rowIdx, priceNoVatColumnNumber, config);
-                InsertRecommendedPriceWithVat(outWs, row, rowIdx, 7, config);
+                InsertRecommendedPriceWithVat(outWs, row, rowIdx, 7, config, inputTable);
                 InsertColor(outWs, row, rowIdx, 8, config);
                 var sizeInStockOrderColumnNumber = 9;
                 InsertSizeInStockOrder(outWs, rows, rowIdx, sizeInStockOrderColumnNumber, config);
@@ -111,7 +111,8 @@ namespace ExsealentOrderCreator
             var totalPcsCell = rightLabelCell.CellRight();
             // TODO what if again ws.RowCount()
             // TODO nefunguje obecny radek headeru
-            totalPcsCell.FormulaA1 = $"SUM({ws.Cell(2, totalPcsCell.Address.ColumnNumber)}:{ws.Cell(rowsCount, totalPcsCell.Address.ColumnNumber)})";
+            totalPcsCell.FormulaA1 =
+                $"SUM({ws.Cell(2, totalPcsCell.Address.ColumnNumber)}:{ws.Cell(rowsCount, totalPcsCell.Address.ColumnNumber)})";
             // conditional formatting
             totalPcsCell
                 .AddConditionalFormat()
@@ -119,7 +120,8 @@ namespace ExsealentOrderCreator
                 .Fill.SetBackgroundColor(config.Yellow);
 
             var totalPriceCell = totalPcsCell.CellRight();
-            totalPriceCell.FormulaA1 = $"SUM({ws.Cell(2, totalPriceCell.Address.ColumnNumber)}:{ws.Cell(rowsCount, totalPriceCell.Address.ColumnNumber)})";
+            totalPriceCell.FormulaA1 =
+                $"SUM({ws.Cell(2, totalPriceCell.Address.ColumnNumber)}:{ws.Cell(rowsCount, totalPriceCell.Address.ColumnNumber)})";
             // styling
             totalPriceCell.Style.NumberFormat.Format = config.EurFormat;
 
@@ -248,12 +250,14 @@ namespace ExsealentOrderCreator
 
         private static void InsertRecommendedPriceWithVat(IXLWorksheet ws, IXLTableRow row, int rowIdx,
             int columnNumber,
-            Configuration config)
+            Configuration config, IXLTable table)
         {
+            var priceColumn = table.Fields.First(field => field.Name.StartsWith(config.ColInPrice)).Name;
+
             var cell = ws.Cell(rowIdx, columnNumber);
-            cell.Value = row.Field(config.ColInPrice).GetString();
+            cell.Value = row.Field(priceColumn).GetString();
             // styling
-            cell.Style.NumberFormat.Format = config.CzkFormat;
+            cell.Style.NumberFormat.Format = priceColumn.ToUpper().Contains(config.Czk) ? config.CzkFormat : config.EurFormat;
             cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             cell.Style.Fill.BackgroundColor = config.LightBlue;
             cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
@@ -282,9 +286,9 @@ namespace ExsealentOrderCreator
             }
 
             // Order from smallest size to largest
-            // Compares numbers then strings
+            // Compares numbers, then strings
             // e.g. 86, 86/92, 104/110, 104, XS, S, M, L, XL, XXL, ONE
-            rows = rows.OrderBy(row => GetSize(row).Split('/').First(),
+            rows = rows.OrderBy(GetSize,
                 new SemiNumericComparer()).ToList();
 
             for (var i = 0; i < rows.Count; i++)

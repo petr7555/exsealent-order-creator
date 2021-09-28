@@ -25,7 +25,7 @@ namespace ExsealentOrderCreator
         public string InputWorkbookName { get; set; } = "Data.xlsx";
         public string OutputWorkbookName { get; set; } = "Nabidka.xlsx";
 
-        public string InputWorksheetName { get; set; } = "Data new";
+        public string InputWorksheetName { get; set; } = "DATA CZK";
         public string OutputWorksheetName { get; set; } = "Nabídka";
 
         public string ImgFolder { get; set; } = "/Users/petr.janik/Desktop/Excel_Makro/Fotky";
@@ -64,6 +64,7 @@ namespace ExsealentOrderCreator
 
         public string EurFormat { get; } = "#,##0.00 €";
         public string CzkFormat { get; } = "#,##0 Kč";
+        public string Czk { get; } = "CZK";
 
         public XLColor Yellow { get; } = XLColor.Yellow;
         public XLColor LightBlue { get; } = XLColor.LightBlue;
