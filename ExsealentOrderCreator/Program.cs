@@ -25,7 +25,6 @@ namespace ExsealentOrderCreator
 
     internal static class Program
     {
-        
         private static void Main(string[] args)
         {
             var deserializer = new DeserializerBuilder()
@@ -41,6 +40,7 @@ namespace ExsealentOrderCreator
 
             Console.WriteLine("Creating order...");
             CreateOrder(config);
+            Console.WriteLine("Order successfully created.");
         }
 
         private static void CreateOrder(Configuration config)
@@ -110,17 +110,15 @@ namespace ExsealentOrderCreator
         private static void InsertTotalPriceBox(IXLWorksheet ws, Configuration config, int columnNumber)
         {
             var rowsCount = ws.Rows().Count();
-            var leftLabelCell = ws.Cell(rowsCount + 2, columnNumber);
+            var leftLabelCell = ws.Cell(config.HeaderRowIndex + rowsCount + 1, columnNumber);
             var rightLabelCell = leftLabelCell.CellRight().CellRight();
             var labelRange = ws.Range(leftLabelCell, rightLabelCell);
             labelRange.Merge();
             labelRange.Value = "Celkem:";
 
             var totalPcsCell = rightLabelCell.CellRight();
-            // TODO what if again ws.RowCount()
-            // TODO nefunguje obecny radek headeru
             totalPcsCell.FormulaA1 =
-                $"SUM({ws.Cell(2, totalPcsCell.Address.ColumnNumber)}:{ws.Cell(rowsCount, totalPcsCell.Address.ColumnNumber)})";
+                $"SUM({ws.Cell(config.HeaderRowIndex + 1, totalPcsCell.Address.ColumnNumber)}:{ws.Cell(config.HeaderRowIndex + rowsCount - 1, totalPcsCell.Address.ColumnNumber)})";
             // conditional formatting
             totalPcsCell
                 .AddConditionalFormat()
@@ -129,7 +127,7 @@ namespace ExsealentOrderCreator
 
             var totalPriceCell = totalPcsCell.CellRight();
             totalPriceCell.FormulaA1 =
-                $"SUM({ws.Cell(2, totalPriceCell.Address.ColumnNumber)}:{ws.Cell(rowsCount, totalPriceCell.Address.ColumnNumber)})";
+                $"SUM({ws.Cell(config.HeaderRowIndex + 1, totalPriceCell.Address.ColumnNumber)}:{ws.Cell(config.HeaderRowIndex + rowsCount - 1, totalPriceCell.Address.ColumnNumber)})";
             // styling
             totalPriceCell.Style.NumberFormat.Format = config.EurFormat;
 
@@ -148,7 +146,8 @@ namespace ExsealentOrderCreator
             {
                 if (column == config.ColOutSizeInStockOrder)
                 {
-                    var range = ws.Range(ws.Cell(1, idx), ws.Cell(1, idx + config.NumSizes - 1));
+                    var range = ws.Range(ws.Cell(config.HeaderRowIndex, idx),
+                        ws.Cell(config.HeaderRowIndex, idx + config.NumSizes - 1));
                     range.Merge();
                     range.Value = column;
                     idx += config.NumSizes;
@@ -158,7 +157,7 @@ namespace ExsealentOrderCreator
                 }
                 else
                 {
-                    ws.Cell(1, idx).Value = column;
+                    ws.Cell(config.HeaderRowIndex, idx).Value = column;
                     idx += 1;
                 }
             }
