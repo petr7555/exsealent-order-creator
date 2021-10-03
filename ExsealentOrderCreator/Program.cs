@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using ClosedXML.Excel;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ClosedXML.Excel;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace ExsealentOrderCreator
 {
@@ -23,21 +25,27 @@ namespace ExsealentOrderCreator
 
     internal static class Program
     {
+        
         private static void Main(string[] args)
         {
-            Configuration config = new();
+            var deserializer = new DeserializerBuilder()
+                .WithNamingConvention(PascalCaseNamingConvention.Instance)
+                .Build();
 
-            // PrintLogo();
-            // PrintName();
+            var config = deserializer.Deserialize<Configuration>(File.ReadAllText(Configuration.ConfigurationFilePath));
 
-            // GetInputs(config);
+            PrintLogo();
+            PrintName();
 
+            GetInputs(config);
+
+            Console.WriteLine("Creating order...");
             CreateOrder(config);
         }
 
         private static void CreateOrder(Configuration config)
         {
-            var inWb = new XLWorkbook(config.InputWorkbookName);
+            var inWb = new XLWorkbook(config.InputWorkbookPath);
             var inWs = inWb.Worksheet(config.InputWorksheetName);
 
             var outWb = new XLWorkbook();
@@ -96,7 +104,7 @@ namespace ExsealentOrderCreator
             // When you make any change to the document, all affected parts of the document are recalculated.
             outWb.CalculateMode = XLCalculateMode.Auto;
 
-            outWb.SaveAs(config.OutputWorkbookName);
+            outWb.SaveAs(config.OutputWorkbookPath);
         }
 
         private static void InsertTotalPriceBox(IXLWorksheet ws, Configuration config, int columnNumber)
@@ -171,7 +179,7 @@ namespace ExsealentOrderCreator
             var imgName = $"{row.Field(config.ColInProduct).GetString()}-{row.Field(config.ColInColor).GetString()}";
             var cell = ws.Cell(rowIdx, columnNumber);
 
-            if (FindImagePath(config.ImgFolder, imgName, out var imgPath))
+            if (FindImagePath(config.ImageFolderPath, imgName, out var imgPath))
             {
                 var image = ws.AddPicture(imgPath)
                     .MoveTo(cell, ws.Cell(rowIdx + 1, columnNumber + 1));
@@ -257,7 +265,8 @@ namespace ExsealentOrderCreator
             var cell = ws.Cell(rowIdx, columnNumber);
             cell.Value = row.Field(priceColumn).GetString();
             // styling
-            cell.Style.NumberFormat.Format = priceColumn.ToUpper().Contains(config.Czk) ? config.CzkFormat : config.EurFormat;
+            cell.Style.NumberFormat.Format =
+                priceColumn.ToUpper().Contains(config.Czk) ? config.CzkFormat : config.EurFormat;
             cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             cell.Style.Fill.BackgroundColor = config.LightBlue;
             cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
@@ -369,14 +378,16 @@ namespace ExsealentOrderCreator
         {
             var inputQuestions = new[]
             {
-                new InputQuestion("Input workbook name", config.InputWorkbookName,
-                    input => config.InputWorkbookName = input),
+                new InputQuestion("Input workbook path", config.InputWorkbookPath,
+                    input => config.InputWorkbookPath = input),
                 new InputQuestion("Input worksheet name", config.InputWorksheetName,
                     input => config.InputWorksheetName = input),
-                new InputQuestion("Output workbook name", config.OutputWorkbookName,
-                    input => config.OutputWorkbookName = input),
+                new InputQuestion("Output workbook path", config.OutputWorkbookPath,
+                    input => config.OutputWorkbookPath = input),
                 new InputQuestion("Output worksheet name", config.OutputWorksheetName,
                     input => config.OutputWorksheetName = input),
+                new InputQuestion("Image folder path", config.ImageFolderPath,
+                    input => config.ImageFolderPath = input),
             };
 
             foreach (var question in inputQuestions)

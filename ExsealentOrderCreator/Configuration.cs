@@ -22,16 +22,22 @@ namespace ExsealentOrderCreator
             ImageRowWidth = RowHeight / RowHeightImageWidthRatio;
         }
 
-        public string InputWorkbookName { get; set; } = "Data.xlsx";
-        public string OutputWorkbookName { get; set; } = "Nabidka.xlsx";
-
+        public const string ConfigurationFilePath = "configuration.yaml";
+        
+        /** Also set from configuration.yaml **/
+        public string InputWorkbookPath { get; set; } = "Data.xlsx";
         public string InputWorksheetName { get; set; } = "DATA CZK";
+
+        public string OutputWorkbookPath { get; set; } = "Nabidka.xlsx";
         public string OutputWorksheetName { get; set; } = "Nabídka";
 
-        public string ImgFolder { get; set; } = "/Users/petr.janik/Desktop/Excel_Makro/Fotky";
+        public string ImageFolderPath { get; set; } = "Fotky";
+
+        /** End of Also set from configuration.yaml **/
+
         public int NumSizes { get; set; }
 
-        public int HeaderRowIndex { get; set; } = 1;
+        public int HeaderRowIndex { get; } = 1;
 
 
         public string ColInEan { get; } = "EAN kode";
