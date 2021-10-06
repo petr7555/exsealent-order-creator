@@ -164,6 +164,7 @@ namespace ExsealentOrderCreator
 
             // styling
             var headerRange = ws.Row(config.HeaderRowIndex).RowUsed();
+            headerRange.Style.Alignment.WrapText = true;
             headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             headerRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
             headerRange.Style.Font.Bold = true;
@@ -181,7 +182,8 @@ namespace ExsealentOrderCreator
             if (FindImagePath(config.ImageFolderPath, imgName, out var imgPath))
             {
                 var image = ws.AddPicture(imgPath)
-                    .MoveTo(cell, ws.Cell(rowIdx + 1, columnNumber + 1));
+                    .MoveTo(cell, config.ImageXOffset, config.ImageYOffset, ws.Cell(rowIdx + 1, columnNumber + 1),
+                        -config.ImageXOffset, -config.ImageYOffset);
             }
 
             // styling

@@ -8,7 +8,7 @@ namespace ExsealentOrderCreator
         {
             InputHeaderColumns = new[]
             {
-                ColInEan, ColInClassification, ColInPcsAvailable, ColInProduct, ColInColor, ColInSize, ColInPrice,
+                ColInClassification, ColInPcsAvailable, ColInProduct, ColInColor, ColInSize, ColInPrice,
                 ColInDetailOne, ColInDescription, ColInDetailTwo
             };
 
@@ -23,7 +23,7 @@ namespace ExsealentOrderCreator
         }
 
         public const string ConfigurationFilePath = "configuration.yaml";
-        
+
         /** Also set from configuration.yaml **/
         public string InputWorkbookPath { get; set; } = "Data.xlsx";
         public string InputWorksheetName { get; set; } = "DATA CZK";
@@ -40,7 +40,6 @@ namespace ExsealentOrderCreator
         public int HeaderRowIndex { get; } = 1;
 
 
-        public string ColInEan { get; } = "EAN kode";
         public string ColInClassification { get; } = "Zařazení";
         public string ColInPcsAvailable { get; } = "K dispozici";
         public string ColInProduct { get; } = "Produkt";
@@ -73,10 +72,15 @@ namespace ExsealentOrderCreator
         public string Czk { get; } = "CZK";
 
         public XLColor Yellow { get; } = XLColor.Yellow;
-        public XLColor LightBlue { get; } = XLColor.LightBlue;
+        public XLColor LightBlue { get; } = XLColor.FromArgb(230, 255, 255);
 
-        public double RowHeight { get; } = 150;
-        public double RowHeightImageWidthRatio { get; } = 5.8;
+        public double RowHeight { get; } = 100;
+        // Width is right in Excel. In WPS office it looks different (too wide).
+        public double RowHeightImageWidthRatio { get; } = 5.556;
         public double ImageRowWidth { get; }
+        
+        // In order not to hide borders with an image
+        public int ImageXOffset { get; } = 2;
+        public int ImageYOffset { get; } = 2;
     }
 }
