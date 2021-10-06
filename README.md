@@ -16,7 +16,7 @@ Created with [ClosedXML](https://github.com/ClosedXML/ClosedXML).
   are happy with the default value, press **Enter**.
 - The basic `configuration.yaml` looks the following:
   ```yaml
-  InputWorkbookPath: /Users/petr.janik/Documents/Projects/exsealent-order-creator/ExsealentOrderCreator/ExsealentOrderCreator/bin/Debug/net5.0/Data.xlsx
+  InputWorkbookPath: /Users/petr.janik/Documents/Projects/ExsealentOrderCreator/ExsealentOrderCreator/bin/Debug/net5.0/Data.xlsx
   InputWorksheetName: DATA CZK
   OutputWorkbookPath: /Users/petr.janik/Desktop/Nabidka.xlsx
   OutputWorksheetName: Nabídka
