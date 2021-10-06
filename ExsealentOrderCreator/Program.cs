@@ -67,6 +67,7 @@ namespace ExsealentOrderCreator
 
             InsertHeader(outWs, config);
 
+            var sizeInStockOrderColumnNumber = 9;
             var rowIdx = config.HeaderRowIndex + 1;
             foreach (var rowGroup in groupedRows)
             {
@@ -82,7 +83,6 @@ namespace ExsealentOrderCreator
                 InsertPriceNoVat(outWs, row, rowIdx, priceNoVatColumnNumber, config);
                 InsertRecommendedPriceWithVat(outWs, row, rowIdx, 7, config, inputTable);
                 InsertColor(outWs, row, rowIdx, 8, config);
-                var sizeInStockOrderColumnNumber = 9;
                 InsertSizeInStockOrder(outWs, rows, rowIdx, sizeInStockOrderColumnNumber, config);
                 var totalPcsColumnNumber = 9 + config.NumSizes;
                 InsertTotalPcs(outWs, row, rowIdx, totalPcsColumnNumber, config, sizeInStockOrderColumnNumber);
@@ -94,8 +94,13 @@ namespace ExsealentOrderCreator
 
             InsertTotalPriceBox(outWs, config, 9 + config.NumSizes - 3);
 
-            // fit columns to contents excluding the image column
-            foreach (var col in outWs.Columns().Skip(1))
+            // fit columns to contents excluding the image column and until Size/InStock/Order column
+            foreach (var col in outWs.Columns().Skip(1).Take(sizeInStockOrderColumnNumber - 2))
+            {
+                col.AdjustToContents();
+            }     
+            // fit columns to contents after the Size/InStock/Order column
+            foreach (var col in outWs.Columns().Skip(sizeInStockOrderColumnNumber - 1 + config.NumSizes))
             {
                 col.AdjustToContents();
             }
@@ -331,6 +336,9 @@ namespace ExsealentOrderCreator
                 pcsOrderedCell.Style.Fill.BackgroundColor = config.Yellow;
                 pcsOrderedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 pcsOrderedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                
+                // styling of column width
+                ws.Column(columnNumber + i).Width = config.ColOutSizeInStockOrderWidth;
             }
         }
 

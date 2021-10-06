@@ -67,6 +67,8 @@ namespace ExsealentOrderCreator
 
         public string[] OutputHeaderColumns { get; }
 
+        public double ColOutSizeInStockOrderWidth { get; } = 7;
+        
         public string EurFormat { get; } = "#,##0.00 €";
         public string CzkFormat { get; } = "#,##0 Kč";
         public string Czk { get; } = "CZK";
