@@ -36,7 +36,6 @@ namespace ExsealentOrderCreator
         /** End of Also set from configuration.yaml **/
 
         public string CompressedImagesDirectoryName { get; } = "_compressed";
-        public int CompressionLevel { get; } = 100;
         public int ResizeRatio { get; } = 2;
 
         public int NumSizes { get; set; }

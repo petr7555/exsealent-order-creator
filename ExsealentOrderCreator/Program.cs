@@ -219,7 +219,7 @@ namespace ExsealentOrderCreator
             var imgDir = Path.GetDirectoryName(imgPath);
             var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(imgPath);
             var newImgPath = Path.Join(imgDir, config.CompressedImagesDirectoryName,
-                $"{fileNameWithoutExtension}_compressed_{config.CompressionLevel}_resized_{config.ResizeRatio}.jpeg");
+                $"{fileNameWithoutExtension}_resized_{config.ResizeRatio}.jpeg");
 
             if (File.Exists(newImgPath))
             {
@@ -232,11 +232,8 @@ namespace ExsealentOrderCreator
             var height = image.Height / config.ResizeRatio;
             image.Mutate(x => x.Resize(width, height));
             
-            // Compress
-            var jpegEncoder = new JpegEncoder {Quality = config.CompressionLevel};
-            
             // Save
-            image.SaveAsJpeg(newImgPath, jpegEncoder);
+            image.SaveAsJpeg(newImgPath);
 
             return newImgPath;
         }
