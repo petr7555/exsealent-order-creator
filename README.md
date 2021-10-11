@@ -21,5 +21,6 @@ Created with [ClosedXML](https://github.com/ClosedXML/ClosedXML).
   OutputWorkbookPath: /Users/petr.janik/Desktop/Nabidka.xlsx
   OutputWorksheetName: Nabídka
   ImageFolderPath: /Users/petr.janik/Desktop/Fotky
+  ResizeRatio: 2 # image width and height are divided by ResizeRatio
   
   ```

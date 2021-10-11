@@ -32,11 +32,11 @@ namespace ExsealentOrderCreator
         public string OutputWorksheetName { get; set; } = "Nabídka";
 
         public string ImageFolderPath { get; set; } = "Fotky";
+        public int ResizeRatio { get; set; } = 2;
 
         /** End of Also set from configuration.yaml **/
 
         public string CompressedImagesDirectoryName { get; } = "_compressed";
-        public int ResizeRatio { get; } = 2;
 
         public int NumSizes { get; set; }
 
