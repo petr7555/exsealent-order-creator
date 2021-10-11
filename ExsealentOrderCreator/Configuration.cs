@@ -2,6 +2,9 @@ using ClosedXML.Excel;
 
 namespace ExsealentOrderCreator
 {
+    /**
+     * NOTE: Setters are necessary for YAML configuration to work.
+     */
     public class Configuration
     {
         public Configuration()
@@ -26,6 +29,7 @@ namespace ExsealentOrderCreator
 
         /** Also set from configuration.yaml **/
         public string InputWorkbookPath { get; set; } = "Data.xlsx";
+
         public string InputWorksheetName { get; set; } = "DATA CZK";
 
         public string OutputWorkbookPath { get; set; } = "Nabidka.xlsx";
@@ -36,56 +40,57 @@ namespace ExsealentOrderCreator
 
         /** End of Also set from configuration.yaml **/
 
-        public string CompressedImagesDirectoryName { get; } = "_compressed";
+        public string CompressedImagesDirectoryName { get; set; } = "_compressed";
 
         public int NumSizes { get; set; }
 
-        public int HeaderRowIndex { get; } = 1;
+        public int HeaderRowIndex { get; set; } = 1;
 
 
-        public string ColInClassification { get; } = "Zařazení";
-        public string ColInPcsAvailable { get; } = "K dispozici";
-        public string ColInProduct { get; } = "Produkt";
-        public string ColInColor { get; } = "Barva";
-        public string ColInSize { get; } = "Velikost";
-        public string ColInPrice { get; } = "Cena";
-        public string ColInDetailOne { get; } = "Údaj 1";
-        public string ColInDescription { get; } = "Popis";
-        public string ColInDetailTwo { get; } = "Údaj 2";
+        public string ColInClassification { get; set; } = "Zařazení";
+        public string ColInPcsAvailable { get; set; } = "K dispozici";
+        public string ColInProduct { get; set; } = "Produkt";
+        public string ColInColor { get; set; } = "Barva";
+        public string ColInSize { get; set; } = "Velikost";
+        public string ColInPrice { get; set; } = "Cena";
+        public string ColInDetailOne { get; set; } = "Údaj 1";
+        public string ColInDescription { get; set; } = "Popis";
+        public string ColInDetailTwo { get; set; } = "Údaj 2";
 
-        public string[] InputHeaderColumns { get; }
+        public string[] InputHeaderColumns { get; set; }
 
 
-        public string ColOutPicture { get; } = "Obrázek";
-        public string ColOutCollection { get; } = "Kolekce";
-        public string ColOutProduct { get; } = "Produkt";
-        public string ColOutDescription { get; } = "Popis";
-        public string ColOutCategory { get; } = "Kategorie";
-        public string ColOutPriceNoVat { get; } = "Cena nákup bez DPH";
-        public string ColOutRecommendedPriceWithVat { get; } = "DMOC s DPH";
-        public string ColOutColor { get; } = "Barva";
-        public string ColOutSizeInStockOrder { get; } = "VELIKOST/SKLADEM/OBJEDNÁVKA";
-        public string ColOutTotalPcs { get; } = "CELKEM ks";
-        public string ColOutTotalPriceNoVat { get; } = "CELKEM bez DPH";
+        public string ColOutPicture { get; set; } = "Obrázek";
+        public string ColOutCollection { get; set; } = "Kolekce";
+        public string ColOutProduct { get; set; } = "Produkt";
+        public string ColOutDescription { get; set; } = "Popis";
+        public string ColOutCategory { get; set; } = "Kategorie";
+        public string ColOutPriceNoVat { get; set; } = "Cena nákup bez DPH";
+        public string ColOutRecommendedPriceWithVat { get; set; } = "DMOC s DPH";
+        public string ColOutColor { get; set; } = "Barva";
+        public string ColOutSizeInStockOrder { get; set; } = "VELIKOST/SKLADEM/OBJEDNÁVKA";
+        public string ColOutTotalPcs { get; set; } = "CELKEM ks";
+        public string ColOutTotalPriceNoVat { get; set; } = "CELKEM bez DPH";
 
-        public string[] OutputHeaderColumns { get; }
+        public string[] OutputHeaderColumns { get; set; }
 
-        public double ColOutSizeInStockOrderWidth { get; } = 7;
-        
-        public string EurFormat { get; } = "#,##0.00 €";
-        public string CzkFormat { get; } = "#,##0 Kč";
-        public string Czk { get; } = "CZK";
+        public double ColOutSizeInStockOrderWidth { get; set; } = 7;
 
-        public XLColor Yellow { get; } = XLColor.Yellow;
-        public XLColor LightBlue { get; } = XLColor.FromArgb(230, 255, 255);
+        public string EurFormat { get; set; } = "#,##0.00 €";
+        public string CzkFormat { get; set; } = "#,##0 Kč";
+        public string Czk { get; set; } = "CZK";
 
-        public double RowHeight { get; } = 100;
+        public XLColor Yellow { get; set; } = XLColor.Yellow;
+        public XLColor LightBlue { get; set; } = XLColor.FromArgb(230, 255, 255);
+
+        public double RowHeight { get; set; } = 100;
+
         // Width is right in Excel. In WPS office it looks different (too wide).
-        public double RowHeightImageWidthRatio { get; } = 5.556;
-        public double ImageRowWidth { get; }
-        
+        public double RowHeightImageWidthRatio { get; set; } = 5.556;
+        public double ImageRowWidth { get; set; }
+
         // In order not to hide borders with an image
-        public int ImageXOffset { get; } = 2;
-        public int ImageYOffset { get; } = 2;
+        public int ImageXOffset { get; set; } = 2;
+        public int ImageYOffset { get; set; } = 2;
     }
 }
