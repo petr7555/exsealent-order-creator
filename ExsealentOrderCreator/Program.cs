@@ -4,6 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -67,6 +70,8 @@ namespace ExsealentOrderCreator
 
             InsertHeader(outWs, config);
 
+            CreateCompressedImagesDirectory(config);
+
             var sizeInStockOrderColumnNumber = 9;
             var rowIdx = config.HeaderRowIndex + 1;
             foreach (var rowGroup in groupedRows)
@@ -98,7 +103,8 @@ namespace ExsealentOrderCreator
             foreach (var col in outWs.Columns().Skip(1).Take(sizeInStockOrderColumnNumber - 2))
             {
                 col.AdjustToContents();
-            }     
+            }
+
             // fit columns to contents after the Size/InStock/Order column
             foreach (var col in outWs.Columns().Skip(sizeInStockOrderColumnNumber - 1 + config.NumSizes))
             {
@@ -110,6 +116,11 @@ namespace ExsealentOrderCreator
             outWb.CalculateMode = XLCalculateMode.Auto;
 
             outWb.SaveAs(config.OutputWorkbookPath);
+        }
+
+        private static void CreateCompressedImagesDirectory(Configuration config)
+        {
+            Directory.CreateDirectory(Path.Join(config.ImageFolderPath, config.CompressedImagesDirectoryName));
         }
 
         private static void InsertTotalPriceBox(IXLWorksheet ws, Configuration config, int columnNumber)
@@ -186,7 +197,9 @@ namespace ExsealentOrderCreator
 
             if (FindImagePath(config.ImageFolderPath, imgName, out var imgPath))
             {
-                var image = ws.AddPicture(imgPath)
+                var compressedImgPath =
+                    GetCompressedImagePath(imgPath, config);
+                var image = ws.AddPicture(compressedImgPath)
                     .MoveTo(cell, config.ImageXOffset, config.ImageYOffset, ws.Cell(rowIdx + 1, columnNumber + 1),
                         -config.ImageXOffset, -config.ImageYOffset);
             }
@@ -199,6 +212,33 @@ namespace ExsealentOrderCreator
             cell.Style.Fill.BackgroundColor = config.LightBlue;
             cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             cell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+        }
+
+        private static string GetCompressedImagePath(string imgPath, Configuration config)
+        {
+            var imgDir = Path.GetDirectoryName(imgPath);
+            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(imgPath);
+            var newImgPath = Path.Join(imgDir, config.CompressedImagesDirectoryName,
+                $"{fileNameWithoutExtension}_compressed_{config.CompressionLevel}_resized_{config.ResizeRatio}.jpeg");
+
+            if (File.Exists(newImgPath))
+            {
+                return newImgPath;
+            }
+
+            // Resize
+            using var image = Image.Load(imgPath);
+            var width = image.Width / config.ResizeRatio;
+            var height = image.Height / config.ResizeRatio;
+            image.Mutate(x => x.Resize(width, height));
+            
+            // Compress
+            var jpegEncoder = new JpegEncoder {Quality = config.CompressionLevel};
+            
+            // Save
+            image.SaveAsJpeg(newImgPath, jpegEncoder);
+
+            return newImgPath;
         }
 
         private static void InsertCollection(IXLWorksheet ws, IXLTableRow row, int rowIdx, int columnNumber,
@@ -336,7 +376,7 @@ namespace ExsealentOrderCreator
                 pcsOrderedCell.Style.Fill.BackgroundColor = config.Yellow;
                 pcsOrderedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 pcsOrderedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-                
+
                 // styling of column width
                 ws.Column(columnNumber + i).Width = config.ColOutSizeInStockOrderWidth;
             }
