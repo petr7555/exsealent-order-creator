@@ -36,7 +36,7 @@ namespace ExsealentOrderCreator
         public string OutputWorksheetName { get; set; } = "Nabídka";
 
         public string ImageFolderPath { get; set; } = "Fotky";
-        public int ResizeRatio { get; set; } = 2;
+        public double ResizeRatio { get; set; } = 2;
 
         /** End of Also set from configuration.yaml **/
 

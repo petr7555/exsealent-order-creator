@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -39,7 +38,7 @@ namespace ExsealentOrderCreator
             PrintLogo();
             PrintName();
 
-            GetInputs(config);
+            // GetInputs(config);
 
             Console.WriteLine("Creating order...");
             CreateOrder(config);
@@ -228,10 +227,10 @@ namespace ExsealentOrderCreator
 
             // Resize
             using var image = Image.Load(imgPath);
-            var width = image.Width / config.ResizeRatio;
-            var height = image.Height / config.ResizeRatio;
+            var width = Convert.ToInt32(image.Width / config.ResizeRatio);
+            var height = Convert.ToInt32(image.Height / config.ResizeRatio);
             image.Mutate(x => x.Resize(width, height));
-            
+
             // Save
             image.SaveAsJpeg(newImgPath);
 
