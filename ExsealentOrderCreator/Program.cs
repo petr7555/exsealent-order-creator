@@ -241,7 +241,7 @@ namespace ExsealentOrderCreator
             Configuration config)
         {
             var cell = ws.Cell(rowIdx, columnNumber);
-            cell.Value = row.Field(config.ColInClassification).GetString();
+            cell.Value = row.Field(config.ColInClassification).GetFormattedString();
             // styling
             cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             cell.Style.Fill.BackgroundColor = config.LightBlue;
@@ -253,7 +253,7 @@ namespace ExsealentOrderCreator
             Configuration config)
         {
             var cell = ws.Cell(rowIdx, columnNumber);
-            cell.Value = row.Field(config.ColInProduct).GetString();
+            cell.Value = row.Field(config.ColInProduct).GetFormattedString();
             // styling
             cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             cell.Style.Fill.BackgroundColor = config.LightBlue;
@@ -265,7 +265,7 @@ namespace ExsealentOrderCreator
             Configuration config)
         {
             var cell = ws.Cell(rowIdx, columnNumber);
-            cell.Value = row.Field(config.ColInDescription).GetString();
+            cell.Value = row.Field(config.ColInDescription).GetFormattedString();
             // styling
             cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             cell.Style.Fill.BackgroundColor = config.LightBlue;
@@ -277,7 +277,7 @@ namespace ExsealentOrderCreator
             Configuration config)
         {
             var cell = ws.Cell(rowIdx, columnNumber);
-            cell.Value = row.Field(config.ColInDetailTwo).GetString();
+            cell.Value = row.Field(config.ColInDetailTwo).GetFormattedString();
             // styling
             cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             cell.Style.Fill.BackgroundColor = config.LightBlue;
@@ -289,7 +289,7 @@ namespace ExsealentOrderCreator
             Configuration config)
         {
             var cell = ws.Cell(rowIdx, columnNumber);
-            cell.Value = row.Field(config.ColInDetailOne).GetString();
+            cell.Value = row.Field(config.ColInDetailOne).GetFormattedString();
             // styling
             cell.Style.NumberFormat.Format = config.EurFormat;
             cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
@@ -305,7 +305,7 @@ namespace ExsealentOrderCreator
             var priceColumn = table.Fields.First(field => field.Name.StartsWith(config.ColInPrice)).Name;
 
             var cell = ws.Cell(rowIdx, columnNumber);
-            cell.Value = row.Field(priceColumn).GetString();
+            cell.Value = row.Field(priceColumn).GetFormattedString();
             // styling
             cell.Style.NumberFormat.Format =
                 priceColumn.ToUpper().Contains(config.Czk) ? config.CzkFormat : config.EurFormat;
@@ -319,7 +319,7 @@ namespace ExsealentOrderCreator
             Configuration config)
         {
             var cell = ws.Cell(rowIdx, columnNumber);
-            cell.Value = row.Field(config.ColInColor).GetString();
+            cell.Value = row.Field(config.ColInColor).GetFormattedString();
             // styling
             cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             cell.Style.Fill.BackgroundColor = config.LightBlue;
@@ -333,7 +333,7 @@ namespace ExsealentOrderCreator
         {
             string GetSize(IXLTableRow row)
             {
-                return row.Field(config.ColInSize).GetString();
+                return row.Field(config.ColInSize).GetFormattedString();
             }
 
             // Order from smallest size to largest
@@ -356,7 +356,7 @@ namespace ExsealentOrderCreator
 
                 // Available
                 var pcsAvailableCell = ws.Cell(rowIdx + 1, columnNumber + i);
-                pcsAvailableCell.Value = rows[i].Field(config.ColInPcsAvailable).GetString();
+                pcsAvailableCell.Value = rows[i].Field(config.ColInPcsAvailable).GetFormattedString();
                 // styling
                 pcsAvailableCell.Style.Font.Bold = true;
                 pcsAvailableCell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
