@@ -49,5 +49,6 @@ You can then right-click on it and select `Run with PowerShell`.
     - `Údaj 1`
     - `Popis`
     - `Údaj 2`
+- Make sure the prices in input worksheet are formatted as number, text or general – **NOT** currency.
 - Make sure the paths in `configuration.yaml` are right.
 - Make sure `configuration.yaml` is properly formatted.
